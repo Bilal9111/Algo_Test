@@ -4,22 +4,16 @@ import random
 
 
 class JsonReader:
-    def __init__(self):
-        self.data = None
-
+    
     def read_file(self, file_path: str) -> list:
-        try:
-            with open(file_path, 'r') as file:
-                data = json.loads(file.read())
-                self.data = data
-        except:
-            raise Exception("Error occured in reading json file.")
-
+        with open(file_path, 'r') as file:
+            data = json.loads(file.read())
+            return data
+        return None
     
 
-    def get_specific_commands(self, command_name: str) -> list:
-        if self.data == None: raise Exception("Data class variable is set to None")
-        return [elem.copy() for elem in self.data if ('function' in elem) and elem['function'] == command_name]
+    def get_specific_commands(self, data: list, command_name: str) -> list:
+        return [elem.copy() for elem in data if ('function' in elem) and elem['function'] == command_name]
 
     def apply_list_mod(self, arr1: list) -> list:
         modded_list = []
@@ -32,20 +26,19 @@ class JsonReader:
             modded_list.append(elem_c)
         return modded_list
 
-    def get_random_commands(self, numb_of_rand_samples: int) -> list:
-        if self.data == None: raise Exception("Data class variable is set to None")
-        return random.sample(self.data, numb_of_rand_samples)
+    def get_random_commands(self, data: list, numb_of_rand_samples: int) -> list:
+        return random.sample(data, numb_of_rand_samples)
 
 if __name__ == '__main__':
 
     json_reader = JsonReader()
 
     # reading json file
-    json_reader.read_file('data.txt')
+    data = json_reader.read_file('data.txt')
 
     # fetching specific command lists
-    parse_commands = json_reader.get_specific_commands('parse')
-    copy_commands = json_reader.get_specific_commands('copy')
+    parse_commands = json_reader.get_specific_commands(data, 'parse')
+    copy_commands = json_reader.get_specific_commands(data, 'copy')
 
     # applying _list and _counter mods to lists
     parse_commands_mod = json_reader.apply_list_mod(parse_commands)
@@ -55,7 +48,7 @@ if __name__ == '__main__':
     functional_commands = parse_commands_mod + copy_commands_mod
 
     # random commands
-    random_commands = json_reader.get_random_commands(2)
+    random_commands = json_reader.get_random_commands(data, 2)
 
     # Printing values
     print(parse_commands)
